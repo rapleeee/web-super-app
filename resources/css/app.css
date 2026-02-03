@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.menu-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition;
+}
+
+.icon {
+    @apply w-5 h-5;
+}
