@@ -13,9 +13,10 @@
         </div>
     </div>
 
-    {{-- Form --}}
+    {{-- Form with Draft --}}
+    <x-form-draft formId="create-laboratorium" formName="Laboratorium">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form action="{{ route('laboran.laboratorium.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form id="create-laboratorium" action="{{ route('laboran.laboratorium.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -167,5 +168,6 @@
             </div>
         </form>
     </div>
+    </x-form-draft>
 </div>
 @endsection

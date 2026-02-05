@@ -259,11 +259,36 @@
             pollingInterval: null,
 
             init() {
-                this.fetchNotifications();
-                // Poll for new notifications every 30 seconds
+                this.fetchUnreadCount();
+                
+                // Only poll when page is visible, every 60 seconds
+                this.startPolling();
+                
+                // Pause polling when tab is hidden
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.stopPolling();
+                    } else {
+                        this.fetchUnreadCount();
+                        this.startPolling();
+                    }
+                });
+            },
+
+            startPolling() {
+                this.stopPolling(); // Clear existing interval
                 this.pollingInterval = setInterval(() => {
-                    this.fetchUnreadCount();
-                }, 30000);
+                    if (!document.hidden) {
+                        this.fetchUnreadCount();
+                    }
+                }, 60000); // Poll every 60 seconds (reduced from 30)
+            },
+
+            stopPolling() {
+                if (this.pollingInterval) {
+                    clearInterval(this.pollingInterval);
+                    this.pollingInterval = null;
+                }
             },
 
             toggleDropdown() {

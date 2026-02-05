@@ -26,9 +26,10 @@
         @endif
     </div>
 
-    {{-- Form --}}
+    {{-- Form with Draft --}}
+    <x-form-draft formId="create-komponen" formName="Komponen Perangkat">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form action="{{ route('laboran.komponen-perangkat.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="create-komponen" action="{{ route('laboran.komponen-perangkat.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @if(request('unit_komputer_id'))
                 <input type="hidden" name="from_unit" value="1">
@@ -203,5 +204,6 @@
             </div>
         </form>
     </div>
+    </x-form-draft>
 </div>
 @endsection

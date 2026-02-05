@@ -13,9 +13,10 @@
         </div>
     </div>
 
-    {{-- Form --}}
+    {{-- Form with Draft --}}
+    <x-form-draft formId="create-petugas" formName="Petugas Laboran">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form action="{{ route('laboran.petugas.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form id="create-petugas" action="{{ route('laboran.petugas.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             {{-- NIP --}}
@@ -97,5 +98,6 @@
             </div>
         </form>
     </div>
+    </x-form-draft>
 </div>
 @endsection

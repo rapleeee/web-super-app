@@ -47,6 +47,24 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('laboran.data-master.guru.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.data-master.guru.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
+                        <x-heroicon-o-academic-cap class="w-5 h-5 flex-shrink-0"/>
+                        <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Data Guru</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('laboran.data-master.mata-pelajaran.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.data-master.mata-pelajaran.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
+                        <x-heroicon-o-book-open class="w-5 h-5 flex-shrink-0"/>
+                        <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Mata Pelajaran</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('laboran.data-master.kelas.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.data-master.kelas.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
+                        <x-heroicon-o-rectangle-group class="w-5 h-5 flex-shrink-0"/>
+                        <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Data Kelas</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('laboran.kategori-perangkat.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.kategori-perangkat.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
                         <x-heroicon-o-tag class="w-5 h-5 flex-shrink-0"/>
                         <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Kategori Perangkat</span>
@@ -69,6 +87,32 @@
                     <a href="{{ route('laboran.maintenance-log.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.maintenance-log.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
                         <x-heroicon-o-wrench-screwdriver class="w-5 h-5 flex-shrink-0"/>
                         <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Maintenance Log</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- LAPORAN -->
+        <div>
+            <p class="text-xs uppercase text-white/40 px-3 mb-2" x-show="sidebarOpen">Laporan</p>
+            <ul class="space-y-1">
+                <li>
+                    <a href="{{ route('laboran.berita-acara.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.berita-acara.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
+                        <x-heroicon-o-document-text class="w-5 h-5 flex-shrink-0"/>
+                        <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Berita Acara</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- SISTEM -->
+        <div>
+            <p class="text-xs uppercase text-white/40 px-3 mb-2" x-show="sidebarOpen">Sistem</p>
+            <ul class="space-y-1">
+                <li>
+                    <a href="{{ route('laboran.backup.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition {{ request()->routeIs('laboran.backup.*') ? 'bg-white/20 text-white' : 'hover:bg-white/10' }}" :class="sidebarOpen ? '' : 'justify-center'">
+                        <x-heroicon-o-server-stack class="w-5 h-5 flex-shrink-0"/>
+                        <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Backup Database</span>
                     </a>
                 </li>
             </ul>

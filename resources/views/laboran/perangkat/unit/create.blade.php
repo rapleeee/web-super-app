@@ -13,9 +13,10 @@
         </div>
     </div>
 
-    {{-- Form --}}
+    {{-- Form with Draft --}}
+    <x-form-draft formId="create-unit-komputer" formName="Unit Komputer">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form action="{{ route('laboran.unit-komputer.store') }}" method="POST">
+        <form id="create-unit-komputer" action="{{ route('laboran.unit-komputer.store') }}" method="POST">
             @csrf
 
             <div class="space-y-6">
@@ -119,5 +120,6 @@
             </div>
         </form>
     </div>
+    </x-form-draft>
 </div>
 @endsection

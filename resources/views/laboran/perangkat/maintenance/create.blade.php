@@ -42,9 +42,10 @@
         </div>
     </div>
 
-    {{-- Form --}}
+    {{-- Form with Draft --}}
+    <x-form-draft formId="create-maintenance" formName="Laporan Maintenance">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form action="{{ route('laboran.maintenance-log.store') }}" method="POST">
+        <form id="create-maintenance" action="{{ route('laboran.maintenance-log.store') }}" method="POST">
             @csrf
 
             <div class="space-y-6">
@@ -172,5 +173,6 @@
             </div>
         </form>
     </div>
+    </x-form-draft>
 </div>
 @endsection

@@ -21,16 +21,20 @@
                     <x-heroicon-o-chevron-down class="w-4 h-4"/>
                 </button>
                 <div x-show="open" @click.away="open = false" x-transition
-                     class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-                    <p class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Laporan Mingguan</p>
+                     class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                    <p class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Laporan Inventory & Maintenance</p>
                     <a href="{{ route('laboran.export.weekly-report') }}"
                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Minggu Ini ({{ now()->startOfWeek()->format('d M') }} - {{ now()->endOfWeek()->format('d M') }})
+                        <span class="font-medium">Minggu Ini</span>
+                        <span class="text-gray-400 text-xs block">{{ now()->startOfWeek()->format('d M') }} - {{ now()->endOfWeek()->format('d M Y') }}</span>
                     </a>
                     <a href="{{ route('laboran.export.weekly-report', ['start_date' => now()->subWeek()->startOfWeek()->format('Y-m-d'), 'end_date' => now()->subWeek()->endOfWeek()->format('Y-m-d')]) }}"
                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Minggu Lalu ({{ now()->subWeek()->startOfWeek()->format('d M') }} - {{ now()->subWeek()->endOfWeek()->format('d M') }})
+                        <span class="font-medium">Minggu Lalu</span>
+                        <span class="text-gray-400 text-xs block">{{ now()->subWeek()->startOfWeek()->format('d M') }} - {{ now()->subWeek()->endOfWeek()->format('d M Y') }}</span>
                     </a>
+                    <div class="border-t border-gray-100 my-2"></div>
+                    <p class="px-4 py-1 text-xs text-gray-400">Mencakup: Ringkasan Global, Inventory per Lab, Detail Unit Komputer, dan Laporan Maintenance</p>
                 </div>
             </div>
         </div>
