@@ -10,9 +10,10 @@ use App\Models\Laboratorium;
 use App\Models\UnitKomputer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UnitKomputerController extends Controller
 {
@@ -29,7 +30,7 @@ class UnitKomputerController extends Controller
             ->when($request->status, fn ($q, $status) => $q->where('status', $status))
             ->when($request->search, fn ($q, $search) => $q->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('kode_unit', 'like', "%{$search}%");
+                    ->orWhere('kode_unit', 'like', "%{$search}%");
             }))
             ->latest()
             ->paginate(10)
@@ -113,11 +114,32 @@ class UnitKomputerController extends Controller
     /**
      * Download template import.
      */
-    public function downloadTemplate(): BinaryFileResponse
+    public function downloadTemplate(): StreamedResponse
     {
-        $path = storage_path('app/templates/template_unit_komputer.csv');
+        $templateFilename = 'template_unit_komputer.csv';
+        $templatePath = 'templates/'.$templateFilename;
+        $disk = Storage::disk('local');
 
-        return response()->download($path, 'template_unit_komputer.csv', [
+        if ($disk->exists($templatePath)) {
+            return $disk->download($templatePath, $templateFilename, [
+                'Content-Type' => 'text/csv',
+            ]);
+        }
+
+        $templateRows = [
+            ['kode_unit', 'nama', 'laboratorium', 'kondisi', 'status'],
+            ['PC-001', 'Komputer 1', 'Lab Komputer A', 'baik', 'aktif'],
+        ];
+
+        return response()->streamDownload(function () use ($templateRows): void {
+            $output = fopen('php://output', 'w');
+
+            foreach ($templateRows as $row) {
+                fputcsv($output, $row);
+            }
+
+            fclose($output);
+        }, $templateFilename, [
             'Content-Type' => 'text/csv',
         ]);
     }

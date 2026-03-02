@@ -18,7 +18,7 @@
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="bg-[#272125] px-6 py-8 text-center">
                 <div class="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center mb-4">
-                    @if($kategoriPerangkat->icon)
+                    @if($kategoriPerangkat->hasValidOutlineIcon())
                         <x-dynamic-component :component="'heroicon-o-' . $kategoriPerangkat->icon" class="w-10 h-10 text-white"/>
                     @else
                         <x-heroicon-o-cube class="w-10 h-10 text-white"/>

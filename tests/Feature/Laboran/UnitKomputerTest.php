@@ -3,6 +3,7 @@
 use App\Models\Laboratorium;
 use App\Models\UnitKomputer;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->laboran = User::factory()->create(['role' => 'laboran']);
@@ -87,4 +88,25 @@ test('unit komputer can be deleted', function () {
     $this->assertDatabaseMissing('unit_komputers', [
         'id' => $unit->id,
     ]);
+});
+
+test('template csv can be downloaded from storage file', function () {
+    Storage::fake('local');
+    Storage::disk('local')->put('templates/template_unit_komputer.csv', "kode_unit,nama,laboratorium,kondisi,status\n");
+
+    $response = $this->actingAs($this->laboran)
+        ->get(route('laboran.unit-komputer.template'));
+
+    $response->assertSuccessful();
+    $response->assertDownload('template_unit_komputer.csv');
+});
+
+test('template csv can still be downloaded when storage file is missing', function () {
+    Storage::fake('local');
+
+    $response = $this->actingAs($this->laboran)
+        ->get(route('laboran.unit-komputer.template'));
+
+    $response->assertSuccessful();
+    $response->assertDownload('template_unit_komputer.csv');
 });

@@ -29,4 +29,22 @@ class KategoriPerangkat extends Model
     {
         return $this->hasMany(KomponenPerangkat::class, 'kategori_id');
     }
+
+    /**
+     * Determine if the icon value maps to a valid Heroicon outline icon.
+     */
+    public function hasValidOutlineIcon(): bool
+    {
+        if (! is_string($this->icon) || $this->icon === '') {
+            return false;
+        }
+
+        try {
+            svg('heroicon-o-'.$this->icon);
+
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
 }

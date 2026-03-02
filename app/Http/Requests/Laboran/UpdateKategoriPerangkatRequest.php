@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Laboran;
 
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +27,22 @@ class UpdateKategoriPerangkatRequest extends FormRequest
             'kode' => ['required', 'string', 'max:50', Rule::unique('kategori_perangkats', 'kode')->ignore($this->route('kategori_perangkat'))],
             'nama' => ['required', 'string', 'max:100'],
             'deskripsi' => ['nullable', 'string', 'max:500'],
-            'icon' => ['nullable', 'string', 'max:100'],
+            'icon' => [
+                'nullable',
+                'string',
+                'max:100',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (! is_string($value) || $value === '') {
+                        return;
+                    }
+
+                    try {
+                        svg('heroicon-o-'.$value);
+                    } catch (\Throwable) {
+                        $fail('Icon Heroicon tidak valid.');
+                    }
+                },
+            ],
             'status' => ['required', 'in:aktif,nonaktif'],
         ];
     }

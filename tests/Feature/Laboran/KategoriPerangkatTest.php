@@ -83,3 +83,37 @@ test('kategori perangkat can be deleted', function () {
         'id' => $kategori->id,
     ]);
 });
+
+test('kategori perangkat index still renders with invalid icon value', function () {
+    KategoriPerangkat::factory()->create([
+        'icon' => 'icon-tidak-valid',
+    ]);
+
+    $response = $this->actingAs($this->laboran)
+        ->get(route('laboran.kategori-perangkat.index'));
+
+    $response->assertSuccessful();
+});
+
+test('kategori perangkat show still renders with invalid icon value', function () {
+    $kategori = KategoriPerangkat::factory()->create([
+        'icon' => 'icon-tidak-valid',
+    ]);
+
+    $response = $this->actingAs($this->laboran)
+        ->get(route('laboran.kategori-perangkat.show', $kategori));
+
+    $response->assertSuccessful();
+});
+
+test('kategori perangkat icon must be a valid heroicon', function () {
+    $response = $this->actingAs($this->laboran)
+        ->post(route('laboran.kategori-perangkat.store'), [
+            'kode' => 'KAT-ICN',
+            'nama' => 'Kategori Icon',
+            'icon' => 'icon-tidak-valid',
+            'status' => 'aktif',
+        ]);
+
+    $response->assertSessionHasErrors(['icon']);
+});
