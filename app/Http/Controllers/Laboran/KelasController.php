@@ -22,7 +22,6 @@ class KelasController extends Controller
             ->when($request->status, fn ($q) => $q->where('status', $request->status))
             ->orderBy('tingkat')
             ->orderBy('jurusan')
-            ->orderBy('rombel')
             ->paginate(15)
             ->withQueryString();
 
@@ -44,19 +43,10 @@ class KelasController extends Controller
     {
         $validated = $request->validate([
             'tingkat' => ['required', 'in:10,11,12'],
-            'jurusan' => ['required', 'in:RPL,DKV,TKJ'],
-            'rombel' => [
-                'required',
-                'string',
-                'max:5',
-                Rule::unique('kelas')->where(function ($query) use ($request) {
-                    return $query->where('tingkat', $request->tingkat)
-                        ->where('jurusan', $request->jurusan);
-                }),
-            ],
+            'jurusan' => ['required', 'in:RPL,DKV,TKJ', Rule::unique('kelas')->where(fn ($query) => $query->where('tingkat', $request->tingkat))],
             'status' => ['required', 'in:aktif,nonaktif'],
         ], [
-            'rombel.unique' => 'Kelas dengan tingkat, jurusan, dan rombel yang sama sudah ada.',
+            'jurusan.unique' => 'Kelas dengan tingkat dan jurusan yang sama sudah ada.',
         ]);
 
         Kelas::create($validated);
@@ -89,19 +79,10 @@ class KelasController extends Controller
     {
         $validated = $request->validate([
             'tingkat' => ['required', 'in:10,11,12'],
-            'jurusan' => ['required', 'in:RPL,DKV,TKJ'],
-            'rombel' => [
-                'required',
-                'string',
-                'max:5',
-                Rule::unique('kelas')->where(function ($query) use ($request) {
-                    return $query->where('tingkat', $request->tingkat)
-                        ->where('jurusan', $request->jurusan);
-                })->ignore($kela->id),
-            ],
+            'jurusan' => ['required', 'in:RPL,DKV,TKJ', Rule::unique('kelas')->where(fn ($query) => $query->where('tingkat', $request->tingkat))->ignore($kela->id)],
             'status' => ['required', 'in:aktif,nonaktif'],
         ], [
-            'rombel.unique' => 'Kelas dengan tingkat, jurusan, dan rombel yang sama sudah ada.',
+            'jurusan.unique' => 'Kelas dengan tingkat dan jurusan yang sama sudah ada.',
         ]);
 
         $kela->update($validated);

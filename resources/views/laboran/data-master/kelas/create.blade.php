@@ -48,20 +48,6 @@
                 </div>
 
                 <div>
-                    <label for="rombel" class="block text-sm font-medium text-gray-700 mb-2">Rombel <span class="text-red-500">*</span></label>
-                    <select name="rombel" id="rombel" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#272125] focus:border-transparent @error('rombel') border-red-500 @enderror">
-                        <option value="">Pilih Rombel</option>
-                        @foreach (\App\Models\Kelas::rombelOptions() as $rombel)
-                            <option value="{{ $rombel }}" {{ old('rombel') === $rombel ? 'selected' : '' }}>{{ $rombel }}</option>
-                        @endforeach
-                    </select>
-                    @error('rombel')
-                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status <span class="text-red-500">*</span></label>
                     <select name="status" id="status" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#272125] focus:border-transparent @error('status') border-red-500 @enderror">
@@ -77,19 +63,17 @@
             {{-- Preview --}}
             <div class="bg-gray-50 rounded-lg p-4" x-data="{ 
                 tingkat: '{{ old('tingkat', '') }}', 
-                jurusan: '{{ old('jurusan', '') }}', 
-                rombel: '{{ old('rombel', '') }}' 
+                jurusan: '{{ old('jurusan', '') }}' 
             }">
                 <h3 class="text-sm font-medium text-gray-700 mb-2">Preview Nama Kelas:</h3>
                 <div class="text-xl font-bold text-gray-900"
-                     x-text="(tingkat && jurusan && rombel) ? 
-                         ({'10': 'X', '11': 'XI', '12': 'XII'}[tingkat] || tingkat) + ' ' + jurusan + ' ' + rombel 
-                         : 'Pilih tingkat, jurusan, dan rombel'"
+                     x-text="(tingkat && jurusan) ? 
+                         ({'10': 'X', '11': 'XI', '12': 'XII'}[tingkat] || tingkat) + ' ' + jurusan
+                         : 'Pilih tingkat dan jurusan'"
                      x-init="
                          $watch('tingkat', () => tingkat = $el.closest('form').querySelector('#tingkat').value);
                          $el.closest('form').querySelector('#tingkat').addEventListener('change', (e) => tingkat = e.target.value);
                          $el.closest('form').querySelector('#jurusan').addEventListener('change', (e) => jurusan = e.target.value);
-                         $el.closest('form').querySelector('#rombel').addEventListener('change', (e) => rombel = e.target.value);
                      ">
                 </div>
             </div>

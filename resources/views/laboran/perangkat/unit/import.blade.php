@@ -133,14 +133,14 @@
                      x-data="{ fileName: '' }"
                      @dragover.prevent="$el.classList.add('border-[#272125]', 'bg-gray-50')"
                      @dragleave.prevent="$el.classList.remove('border-[#272125]', 'bg-gray-50')"
-                     @drop.prevent="$el.classList.remove('border-[#272125]', 'bg-gray-50'); fileName = $event.dataTransfer.files[0]?.name || ''; $refs.fileInput.files = $event.dataTransfer.files">
+                     @drop.prevent="$el.classList.remove('border-[#272125]', 'bg-gray-50'); fileName = $event.dataTransfer.files[0]?.name || ''; $refs.fileInput.files = $event.dataTransfer.files; $refs.fileInput.dispatchEvent(new Event('change', { bubbles: true }));">
                     <div class="space-y-2 text-center">
                         <x-heroicon-o-document-arrow-up class="mx-auto h-12 w-12 text-gray-400"/>
                         <div class="flex text-sm text-gray-600">
                             <label for="file" class="relative cursor-pointer bg-white rounded-md font-medium text-[#272125] hover:text-[#3a3136] focus-within:outline-none">
                                 <span x-show="!fileName">Pilih file</span>
                                 <span x-show="fileName" x-text="fileName" class="text-green-600"></span>
-                                <input id="file" name="file" type="file" class="sr-only" accept=".csv,.xlsx,.xls" required
+                                <input id="file" name="file" type="file" class="sr-only" accept=".csv,.xlsx,.xls" required data-max-kb="2048" data-file-label="File Import Unit Komputer"
                                        x-ref="fileInput"
                                        @change="fileName = $event.target.files[0]?.name || ''">
                             </label>

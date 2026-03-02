@@ -29,7 +29,6 @@ test('kelas can be created', function () {
         ->post(route('laboran.data-master.kelas.store'), [
             'tingkat' => '10',
             'jurusan' => 'RPL',
-            'rombel' => '1',
             'status' => 'aktif',
         ]);
 
@@ -40,7 +39,6 @@ test('kelas can be created', function () {
     $this->assertDatabaseHas('kelas', [
         'tingkat' => '10',
         'jurusan' => 'RPL',
-        'rombel' => '1',
     ]);
 });
 
@@ -48,7 +46,6 @@ test('kelas can be updated', function () {
     $kelas = Kelas::factory()->create([
         'tingkat' => '10',
         'jurusan' => 'RPL',
-        'rombel' => '1',
     ]);
 
     $response = $this
@@ -56,7 +53,6 @@ test('kelas can be updated', function () {
         ->put(route('laboran.data-master.kelas.update', $kelas), [
             'tingkat' => '11',
             'jurusan' => 'DKV',
-            'rombel' => '2',
             'status' => 'nonaktif',
         ]);
 
@@ -66,7 +62,6 @@ test('kelas can be updated', function () {
         'id' => $kelas->id,
         'tingkat' => '11',
         'jurusan' => 'DKV',
-        'rombel' => '2',
         'status' => 'nonaktif',
     ]);
 });
@@ -75,7 +70,6 @@ test('kelas can be deleted', function () {
     $kelas = Kelas::factory()->create([
         'tingkat' => '12',
         'jurusan' => 'TKJ',
-        'rombel' => '3',
     ]);
 
     $response = $this
@@ -91,33 +85,29 @@ test('kelas nama_lengkap accessor returns correct format', function () {
     $kelas = Kelas::factory()->create([
         'tingkat' => '10',
         'jurusan' => 'RPL',
-        'rombel' => '1',
     ]);
 
-    expect($kelas->nama_lengkap)->toBe('X RPL 1');
+    expect($kelas->nama_lengkap)->toBe('X RPL');
 
     $kelas2 = Kelas::factory()->create([
         'tingkat' => '11',
         'jurusan' => 'DKV',
-        'rombel' => '2',
     ]);
 
-    expect($kelas2->nama_lengkap)->toBe('XI DKV 2');
+    expect($kelas2->nama_lengkap)->toBe('XI DKV');
 
     $kelas3 = Kelas::factory()->create([
         'tingkat' => '12',
         'jurusan' => 'TKJ',
-        'rombel' => '3',
     ]);
 
-    expect($kelas3->nama_lengkap)->toBe('XII TKJ 3');
+    expect($kelas3->nama_lengkap)->toBe('XII TKJ');
 });
 
 test('duplicate kelas cannot be created', function () {
     Kelas::factory()->create([
         'tingkat' => '10',
         'jurusan' => 'RPL',
-        'rombel' => '1',
     ]);
 
     $response = $this
@@ -125,9 +115,8 @@ test('duplicate kelas cannot be created', function () {
         ->post(route('laboran.data-master.kelas.store'), [
             'tingkat' => '10',
             'jurusan' => 'RPL',
-            'rombel' => '1',
             'status' => 'aktif',
         ]);
 
-    $response->assertSessionHasErrors(['rombel']);
+    $response->assertSessionHasErrors(['jurusan']);
 });

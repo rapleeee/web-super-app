@@ -149,7 +149,7 @@
             {{-- Foto --}}
             <div>
                 <label for="foto" class="block text-sm font-medium text-gray-700 mb-2">Foto Laboratorium</label>
-                <input type="file" name="foto" id="foto" accept="image/jpeg,image/png,image/jpg"
+                <input type="file" name="foto" id="foto" accept="image/jpeg,image/png,image/jpg" data-max-kb="2048" data-file-label="Foto"
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#272125] focus:border-transparent @error('foto') border-red-500 @enderror">
                 <p class="mt-1 text-xs text-gray-500">Format: JPG, JPEG, PNG. Maks: 2MB</p>
                 @error('foto')

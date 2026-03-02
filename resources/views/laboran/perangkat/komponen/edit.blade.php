@@ -167,7 +167,7 @@
                             <img src="{{ Storage::url($komponenPerangkat->foto) }}" alt="Foto komponen" class="w-32 h-32 object-cover rounded-lg">
                         </div>
                     @endif
-                    <input type="file" name="foto" id="foto" accept="image/*"
+                    <input type="file" name="foto" id="foto" accept="image/*" data-max-kb="2048" data-file-label="Foto Komponen"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#272125] focus:border-transparent @error('foto') border-red-500 @enderror">
                     <p class="mt-1 text-xs text-gray-500">Format: JPG, PNG. Maks: 2MB. Kosongkan jika tidak ingin mengubah foto.</p>
                     @error('foto')

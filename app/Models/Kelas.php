@@ -15,7 +15,6 @@ class Kelas extends Model
     protected $fillable = [
         'tingkat',
         'jurusan',
-        'rombel',
         'status',
     ];
 
@@ -28,7 +27,7 @@ class Kelas extends Model
     }
 
     /**
-     * Accessor untuk nama display (X RPL 1, XI DKV 2, dll).
+     * Accessor untuk nama display (X RPL, XI DKV, dll).
      */
     protected function namaLengkap(): Attribute
     {
@@ -40,7 +39,7 @@ class Kelas extends Model
                 default => $this->tingkat,
             };
 
-            return "{$tingkatRomawi} {$this->jurusan} {$this->rombel}";
+            return "{$tingkatRomawi} {$this->jurusan}";
         });
     }
 
@@ -58,13 +57,5 @@ class Kelas extends Model
     public static function jurusanOptions(): array
     {
         return ['RPL', 'DKV', 'TKJ'];
-    }
-
-    /**
-     * Available rombel options.
-     */
-    public static function rombelOptions(): array
-    {
-        return ['1', '2', '3'];
     }
 }

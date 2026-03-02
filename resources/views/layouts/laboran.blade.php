@@ -20,53 +20,6 @@
 
 <body class="bg-gray-100 font-sans antialiased">
 
-{{-- Toast Notification Component --}}
-<div x-data="toastNotification()" x-init="init()" class="fixed top-4 right-4 z-[100] space-y-2">
-    <template x-for="toast in toasts" :key="toast.id">
-        <div x-show="toast.show"
-             x-transition:enter="transform ease-out duration-300 transition"
-             x-transition:enter-start="translate-x-full opacity-0"
-             x-transition:enter-end="translate-x-0 opacity-100"
-             x-transition:leave="transform ease-in duration-200 transition"
-             x-transition:leave-start="translate-x-0 opacity-100"
-             x-transition:leave-end="translate-x-full opacity-0"
-             class="flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[320px]"
-             :class="{
-                'bg-green-500 text-white': toast.type === 'success',
-                'bg-red-500 text-white': toast.type === 'error',
-                'bg-yellow-500 text-white': toast.type === 'warning',
-                'bg-blue-500 text-white': toast.type === 'info'
-             }">
-            <template x-if="toast.type === 'success'">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </template>
-            <template x-if="toast.type === 'error'">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </template>
-            <template x-if="toast.type === 'warning'">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-            </template>
-            <template x-if="toast.type === 'info'">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </template>
-            <span class="flex-1 text-sm font-medium" x-text="toast.message"></span>
-            <button @click="removeToast(toast.id)" class="flex-shrink-0 hover:opacity-75">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </template>
-</div>
-
 <div x-data="{ sidebarOpen: window.innerWidth >= 1024 }" @resize.window="sidebarOpen = window.innerWidth >= 1024 ? sidebarOpen : false" class="flex h-screen bg-gray-100">
 
     <!-- SIDEBAR -->
@@ -366,40 +319,20 @@
         }
     }
 
-    // Toast Notification System
-    function toastNotification() {
-        return {
-            toasts: [],
-            init() {
-                // Check for session flash messages
-                @if(session('success'))
-                    this.addToast('success', '{{ session('success') }}');
-                @endif
-                @if(session('error'))
-                    this.addToast('error', '{{ session('error') }}');
-                @endif
-                @if(session('warning'))
-                    this.addToast('warning', '{{ session('warning') }}');
-                @endif
-                @if(session('info'))
-                    this.addToast('info', '{{ session('info') }}');
-                @endif
-            },
-            addToast(type, message) {
-                const id = Date.now();
-                this.toasts.push({ id, type, message, show: true });
-                setTimeout(() => this.removeToast(id), 4000);
-            },
-            removeToast(id) {
-                const index = this.toasts.findIndex(t => t.id === id);
-                if (index > -1) {
-                    this.toasts[index].show = false;
-                    setTimeout(() => {
-                        this.toasts = this.toasts.filter(t => t.id !== id);
-                    }, 200);
-                }
+    // SweetAlert2 Toast
+    function showToast(icon, title) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon,
+            title,
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'rounded-xl'
             }
-        }
+        });
     }
 
     // SweetAlert2 Confirm Delete
@@ -473,6 +406,76 @@
             }
         });
     }
+
+    // Global file size guard for all upload fields
+    function attachUploadSizeValidation() {
+        document.querySelectorAll('input[type="file"][data-max-kb]').forEach((input) => {
+            input.addEventListener('change', function () {
+                if (!this.files || this.files.length === 0) {
+                    return;
+                }
+
+                const maxKb = Number(this.dataset.maxKb);
+                const maxBytes = maxKb * 1024;
+                const selectedFile = this.files[0];
+                const fileLabel = this.dataset.fileLabel || 'File';
+
+                if (Number.isNaN(maxBytes) || maxBytes <= 0) {
+                    return;
+                }
+
+                if (selectedFile.size > maxBytes) {
+                    this.value = '';
+
+                    showError(
+                        'Ukuran File Terlalu Besar',
+                        `${fileLabel} maksimal ${maxKb / 1024}MB. Silakan pilih file yang lebih kecil.`
+                    );
+                }
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const flashMessages = [
+            { icon: 'success', message: @json(session('success')) },
+            { icon: 'error', message: @json(session('error')) },
+            { icon: 'warning', message: @json(session('warning')) },
+            { icon: 'info', message: @json(session('info')) },
+        ];
+
+        flashMessages.forEach((flash) => {
+            if (flash.message) {
+                showToast(flash.icon, flash.message);
+            }
+        });
+
+        const validationErrors = @json($errors->all());
+        if (validationErrors.length > 0) {
+            const maxVisibleErrors = 5;
+            const errorItems = validationErrors
+                .slice(0, maxVisibleErrors)
+                .map((error) => `<li>${error}</li>`)
+                .join('');
+
+            const moreText = validationErrors.length > maxVisibleErrors
+                ? `<p class="mt-2 text-sm text-gray-500">+${validationErrors.length - maxVisibleErrors} error lainnya.</p>`
+                : '';
+
+            Swal.fire({
+                title: 'Validasi Gagal',
+                icon: 'error',
+                html: `<ul class="text-left list-disc pl-5 space-y-1">${errorItems}</ul>${moreText}`,
+                confirmButtonColor: '#dc2626',
+                customClass: {
+                    popup: 'rounded-xl',
+                    confirmButton: 'rounded-lg px-4 py-2'
+                }
+            });
+        }
+
+        attachUploadSizeValidation();
+    });
 </script>
 
 @stack('scripts')

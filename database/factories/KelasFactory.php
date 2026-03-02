@@ -19,7 +19,6 @@ class KelasFactory extends Factory
         return [
             'tingkat' => $this->faker->randomElement(['10', '11', '12']),
             'jurusan' => $this->faker->randomElement(['RPL', 'DKV', 'TKJ']),
-            'rombel' => $this->faker->randomElement(['1', '2', '3']),
             'status' => 'aktif',
         ];
     }

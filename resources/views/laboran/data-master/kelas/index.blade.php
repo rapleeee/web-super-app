@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Data Kelas</h1>
-            <p class="text-gray-600 mt-1">Kelola data kelas (tingkat, jurusan, rombel)</p>
+            <p class="text-gray-600 mt-1">Kelola data kelas (tingkat dan jurusan)</p>
         </div>
         <a href="{{ route('laboran.data-master.kelas.create') }}"
            class="inline-flex items-center gap-2 bg-[#272125] text-white px-4 py-2 rounded-lg hover:bg-[#3a3136] transition">
@@ -61,7 +61,6 @@
                         <th class="px-6 py-4 text-left">Kelas</th>
                         <th class="px-6 py-4 text-center">Tingkat</th>
                         <th class="px-6 py-4 text-center">Jurusan</th>
-                        <th class="px-6 py-4 text-center">Rombel</th>
                         <th class="px-6 py-4 text-center">Status</th>
                         <th class="px-6 py-4 text-center">Aksi</th>
                     </tr>
@@ -94,7 +93,6 @@
                                     {{ $kelas->jurusan }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-center font-medium">{{ $kelas->rombel }}</td>
                             <td class="px-6 py-4 text-center">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $kelas->status === 'aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                     {{ ucfirst($kelas->status) }}
@@ -117,7 +115,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                 <x-heroicon-o-academic-cap class="w-12 h-12 mx-auto text-gray-300 mb-3"/>
                                 <p>Belum ada data kelas.</p>
                             </td>

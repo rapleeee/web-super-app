@@ -21,7 +21,7 @@
             </div>
             <div class="flex-1">
                 <h2 class="text-xl font-semibold text-gray-900">{{ $kelas->nama_lengkap }}</h2>
-                <p class="text-gray-500 mt-1">{{ $kelas->jurusan }} - Rombel {{ $kelas->rombel }}</p>
+                <p class="text-gray-500 mt-1">{{ $kelas->jurusan }}</p>
             </div>
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $kelas->status === 'aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                 {{ ucfirst($kelas->status) }}
@@ -44,10 +44,6 @@
                 @endphp
                 <p class="mt-1 text-gray-900 text-lg font-semibold">{{ $kelas->jurusan }}</p>
                 <p class="text-sm text-gray-500">{{ $jurusanFull[$kelas->jurusan] ?? '' }}</p>
-            </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Rombel</h3>
-                <p class="mt-1 text-gray-900 text-lg font-semibold">{{ $kelas->rombel }}</p>
             </div>
             <div>
                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Dibuat Pada</h3>

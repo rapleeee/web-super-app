@@ -42,7 +42,7 @@ class BeritaAcaraController extends Controller
 
         $gurus = Guru::aktif()->orderBy('nama')->get();
         $mataPelajarans = MataPelajaran::aktif()->orderBy('nama')->get();
-        $kelass = Kelas::aktif()->orderBy('tingkat')->orderBy('jurusan')->orderBy('rombel')->get();
+        $kelass = Kelas::aktif()->orderBy('tingkat')->orderBy('jurusan')->get();
         $alatTambahanOptions = BeritaAcara::alatTambahanOptions();
 
         return view('laboran.berita-acara.create', compact(
@@ -91,7 +91,7 @@ class BeritaAcaraController extends Controller
 
         $gurus = Guru::aktif()->orderBy('nama')->get();
         $mataPelajarans = MataPelajaran::aktif()->orderBy('nama')->get();
-        $kelass = Kelas::aktif()->orderBy('tingkat')->orderBy('jurusan')->orderBy('rombel')->get();
+        $kelass = Kelas::aktif()->orderBy('tingkat')->orderBy('jurusan')->get();
         $alatTambahanOptions = BeritaAcara::alatTambahanOptions();
 
         return view('laboran.berita-acara.edit', compact(
