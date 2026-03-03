@@ -59,6 +59,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get leave requests submitted by this user.
+     */
+    public function izinKaryawans(): HasMany
+    {
+        return $this->hasMany(IzinKaryawan::class, 'user_id');
+    }
+
+    /**
      * Get unread notifications count.
      */
     public function unreadNotificationsCount(): int

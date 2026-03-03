@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,17 +35,17 @@ class DashboardController extends Controller
                 'icon' => 'book-open',
                 'title' => 'Kepegawaian TU',
                 'desc' => 'Manajemen data kepegawaian dan administrasi tata usaha.',
-                'route' => '#',
+                'route' => route('kepegawaian-tu.izin-karyawan.index'),
                 'color' => 'green',
-                'active' => false,
+                'active' => true,
             ],
             [
                 'icon' => 'building-library',
                 'title' => 'Sarana Umum',
                 'desc' => 'Kelola data sarana dan prasarana umum sekolah.',
-                'route' => '#',
+                'route' => route('sarana-umum.dashboard'),
                 'color' => 'orange',
-                'active' => false,
+                'active' => true,
             ],
         ];
 

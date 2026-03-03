@@ -54,6 +54,16 @@ class UserFactory extends Factory
     }
 
     /**
+     * Indicate that the user is a pejabat.
+     */
+    public function pejabat(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'pejabat',
+        ]);
+    }
+
+    /**
      * Indicate that the user is a laboran.
      */
     public function laboran(): static

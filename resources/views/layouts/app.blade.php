@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#272125">
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.png') }}">
 
         <title>Sistem Internal - {{ $title -> name ?? 'Dashboard' }}</title>
 
@@ -34,5 +37,13 @@
                 </section>
             </main>
         </div>
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {
+                    });
+                });
+            }
+        </script>
     </body>
 </html>

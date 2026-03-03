@@ -14,12 +14,6 @@
                 <a href="{{ $menu['route'] }}"
                    class="group relative bg-white rounded-xl border border-gray-200 p-6 transition-all duration-300
                           {{ $menu['active'] ? 'hover:border-'.$menu['color'].'-500 hover:shadow-lg' : 'opacity-60 grayscale' }}">
-                    
-                    @if (!$menu['active'])
-                        <span class="absolute top-3 right-3 px-2 py-1 bg-gray-200 text-gray-700 text-xs font-semibold rounded-full">
-                            Segera Hadir
-                        </span>
-                    @endif
 
                     <div class="flex items-start gap-4">
                         <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-{{$menu['color']}}-100 text-{{$menu['color']}}-600">

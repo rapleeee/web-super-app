@@ -15,7 +15,17 @@ class AuthCheck
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! in_array(auth()->user()->role, $roles)) {
+        $userRole = auth()->user()?->role;
+        if (! $userRole) {
+            abort(403);
+        }
+
+        $privilegedRoles = ['admin', 'pejabat'];
+        if (in_array($userRole, $privilegedRoles, true)) {
+            return $next($request);
+        }
+
+        if (! in_array($userRole, $roles, true)) {
             abort(403);
         }
 
