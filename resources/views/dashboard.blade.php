@@ -4,6 +4,18 @@
     <header class="mb-6">
         <h1 class="text-3xl font-bold text-gray-900">Portal Sistem Terpusat</h1>
         <p class="text-gray-500 mt-1">Selamat datang kembali, {{ $user->name }}.</p>
+
+        @if(session('success'))
+            <div class="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {{ session('error') }}
+            </div>
+        @endif
     </header>
 
     {{-- Main Content --}}
@@ -30,6 +42,30 @@
 
         {{-- Right Column: Announcements --}}
         <aside class="bg-white rounded-xl border border-gray-200 p-6 flex flex-col">
+            @if($canManageMaintenance)
+                <div class="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h2 class="text-sm font-semibold text-gray-900">Mode Maintenance</h2>
+                            <p class="mt-1 text-xs text-gray-600">Toggle halaman website ke status under maintenance.</p>
+                        </div>
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium {{ $isMaintenanceMode ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
+                            {{ $isMaintenanceMode ? 'Aktif' : 'Nonaktif' }}
+                        </span>
+                    </div>
+
+                    <form action="{{ route('dashboard.maintenance-mode.update') }}" method="POST" class="mt-4">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="enabled" value="{{ $isMaintenanceMode ? 0 : 1 }}">
+                        <button type="submit"
+                                class="w-full rounded-lg px-4 py-2 text-sm font-semibold text-white transition {{ $isMaintenanceMode ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700' }}">
+                            {{ $isMaintenanceMode ? 'Matikan Maintenance' : 'Aktifkan Maintenance' }}
+                        </button>
+                    </form>
+                </div>
+            @endif
+
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-900">Pengumuman</h2>
                 <a href="#" class="text-sm text-blue-600 hover:underline">Lihat semua</a>

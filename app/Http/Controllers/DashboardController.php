@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\EnsureApplicationNotInCustomMaintenanceMode;
+use App\Http\Requests\Dashboard\ToggleMaintenanceModeRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
 
@@ -67,7 +72,27 @@ class DashboardController extends Controller
             ],
         ];
 
-        return view('dashboard', compact('user', 'menus', 'announcements'));
+        $isMaintenanceMode = (bool) Cache::get(EnsureApplicationNotInCustomMaintenanceMode::cacheKey(), false);
+        $canManageMaintenance = $user?->role === 'admin' || $user?->email === 'test@example.com';
+
+        return view('dashboard', compact('user', 'menus', 'announcements', 'isMaintenanceMode', 'canManageMaintenance'));
+    }
+
+    public function updateMaintenanceMode(ToggleMaintenanceModeRequest $request): RedirectResponse
+    {
+        if ($request->boolean('enabled')) {
+            Cache::forever(EnsureApplicationNotInCustomMaintenanceMode::cacheKey(), true);
+
+            return redirect()
+                ->route('dashboard.index')
+                ->with('success', 'Mode maintenance aktif.');
+        }
+
+        Cache::forget(EnsureApplicationNotInCustomMaintenanceMode::cacheKey());
+
+        return redirect()
+            ->route('dashboard.index')
+            ->with('success', 'Mode maintenance dinonaktifkan.');
     }
 
     /**
