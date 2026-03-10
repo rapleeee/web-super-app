@@ -21,16 +21,11 @@ class UnitKomputerImport implements SkipsEmptyRows, SkipsOnFailure, ToModel, Wit
 
     public function __construct()
     {
-        // Cache laboratorium untuk lookup
         $this->laboratoriums = Laboratorium::pluck('id', 'nama')->toArray();
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function model(array $row)
+    public function model(array $row): ?UnitKomputer
     {
-        // Cari laboratorium_id dari nama
         $laboratoriumId = $this->laboratoriums[$row['laboratorium']] ?? null;
 
         if (! $laboratoriumId) {
@@ -53,7 +48,7 @@ class UnitKomputerImport implements SkipsEmptyRows, SkipsOnFailure, ToModel, Wit
         return [
             'kode_unit' => ['required', 'string', 'max:50', 'unique:unit_komputers,kode_unit'],
             'nama' => ['required', 'string', 'max:100'],
-            'laboratorium' => ['required', 'string', 'exists:laboratoria,nama'],
+            'laboratorium' => ['required', 'string', 'exists:laboratoriums,nama'],
             'nomor_meja' => ['nullable', 'integer', 'min:1'],
             'kondisi' => ['nullable', 'in:baik,rusak_ringan,rusak_berat,mati_total'],
             'status' => ['nullable', 'in:aktif,dalam_perbaikan,tidak_aktif'],

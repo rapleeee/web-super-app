@@ -166,22 +166,18 @@ class UnitKomputerController extends Controller
         ]);
 
         try {
-            // Store file temporarily
-            $path = $request->file('file')->store('imports/temp');
-            $fullPath = storage_path('app/'.$path);
+            $disk = 'local';
+            $path = $request->file('file')->store('imports/temp', $disk);
 
-            // Read data for preview
             $data = Excel::toArray([], $request->file('file'))[0];
 
             if (count($data) < 2) {
                 return back()->with('error', 'File kosong atau hanya berisi header.');
             }
 
-            // Get headers and rows
             $headers = array_map('strtolower', array_map('trim', $data[0]));
             $rows = array_slice($data, 1);
 
-            // Map rows to associative array
             $previewData = [];
             $laboratoriums = Laboratorium::pluck('id', 'nama')->toArray();
             $existingCodes = UnitKomputer::pluck('kode_unit')->toArray();
@@ -194,7 +190,6 @@ class UnitKomputerController extends Controller
                 $rowData = array_combine($headers, $row);
                 $errors = [];
 
-                // Validate each row
                 if (empty($rowData['kode_unit'])) {
                     $errors[] = 'Kode unit wajib diisi';
                 } elseif (in_array($rowData['kode_unit'], $existingCodes)) {
@@ -222,15 +217,20 @@ class UnitKomputerController extends Controller
                 }
 
                 $previewData[] = [
-                    'row_number' => $index + 2, // +2 because 1-indexed and skip header
+                    'row_number' => $index + 2,
                     'data' => $rowData,
                     'errors' => $errors,
                     'valid' => empty($errors),
                 ];
             }
 
-            // Store path in session for later processing
-            session(['import_file_path' => $path]);
+            session([
+                'unit_komputer.import_file' => [
+                    'disk' => $disk,
+                    'path' => $path,
+                ],
+                'import_file_path' => $path,
+            ]);
 
             $validCount = count(array_filter($previewData, fn ($row) => $row['valid']));
             $invalidCount = count($previewData) - $validCount;
@@ -246,9 +246,27 @@ class UnitKomputerController extends Controller
      */
     public function importProcess(Request $request): RedirectResponse
     {
-        $path = session('import_file_path');
+        $importFile = session('unit_komputer.import_file');
+        $diskName = 'local';
+        $path = null;
 
-        if (! $path || ! file_exists(storage_path('app/'.$path))) {
+        if (is_array($importFile)) {
+            $diskName = $importFile['disk'] ?? 'local';
+            $path = $importFile['path'] ?? null;
+        } elseif (is_string(session('import_file_path'))) {
+            $path = session('import_file_path');
+
+            $defaultDisk = config('filesystems.default', 'local');
+            $defaultDiskDriver = config("filesystems.disks.{$defaultDisk}.driver");
+
+            if ($defaultDiskDriver === 'local' && Storage::disk($defaultDisk)->exists($path)) {
+                $diskName = $defaultDisk;
+            }
+        }
+
+        $disk = Storage::disk($diskName);
+
+        if (! $path || ! $disk->exists($path)) {
             return redirect()
                 ->route('laboran.unit-komputer.import')
                 ->with('error', 'File import tidak ditemukan. Silakan upload ulang.');
@@ -256,11 +274,10 @@ class UnitKomputerController extends Controller
 
         try {
             $import = new UnitKomputerImport;
-            Excel::import($import, storage_path('app/'.$path));
+            Excel::import($import, $disk->path($path));
 
-            // Clean up temp file
-            \Storage::delete($path);
-            session()->forget('import_file_path');
+            $disk->delete($path);
+            session()->forget(['unit_komputer.import_file', 'import_file_path']);
 
             $failures = $import->failures();
 

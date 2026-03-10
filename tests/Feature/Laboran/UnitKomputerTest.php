@@ -3,6 +3,7 @@
 use App\Models\Laboratorium;
 use App\Models\UnitKomputer;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -109,4 +110,53 @@ test('template csv can still be downloaded when storage file is missing', functi
 
     $response->assertSuccessful();
     $response->assertDownload('template_unit_komputer.csv');
+});
+
+test('unit komputer import preview and process works when default disk is public', function () {
+    config()->set('filesystems.default', 'public');
+
+    $file = UploadedFile::fake()->createWithContent('unit-komputer.csv', implode(PHP_EOL, [
+        'kode_unit,nama,laboratorium,nomor_meja,kondisi,status,keterangan',
+        "PC-900,Komputer Import,{$this->laboratorium->nama},9,baik,aktif,Data import test",
+        "PC-901,Komputer Import 2,{$this->laboratorium->nama},10,rusak_ringan,dalam_perbaikan,Data import test 2",
+    ]));
+
+    $this->actingAs($this->laboran);
+
+    $previewResponse = $this
+        ->post(route('laboran.unit-komputer.import.preview'), [
+            'file' => $file,
+        ]);
+
+    $previewResponse
+        ->assertSuccessful()
+        ->assertSessionHas('unit_komputer.import_file.path');
+
+    $storedPath = session('unit_komputer.import_file.path');
+    expect($storedPath)->toBeString();
+    expect(Storage::disk('local')->exists($storedPath))->toBeTrue();
+
+    $response = $this->withSession([
+        'unit_komputer' => [
+            'import_file' => [
+                'disk' => 'local',
+                'path' => $storedPath,
+            ],
+        ],
+        'import_file_path' => $storedPath,
+    ])->post(route('laboran.unit-komputer.import.process'));
+
+    $response
+        ->assertRedirect(route('laboran.unit-komputer.index'))
+        ->assertSessionHas('success', 'Data unit komputer berhasil diimport.');
+
+    $this->assertDatabaseHas('unit_komputers', [
+        'kode_unit' => 'PC-900',
+        'nama' => 'Komputer Import',
+    ]);
+
+    $this->assertDatabaseHas('unit_komputers', [
+        'kode_unit' => 'PC-901',
+        'nama' => 'Komputer Import 2',
+    ]);
 });
