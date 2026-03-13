@@ -112,3 +112,16 @@ test('maintenance log can be deleted', function () {
         'id' => $log->id,
     ]);
 });
+
+test('maintenance log can be exported as excel', function () {
+    MaintenanceLog::factory()->create([
+        'komponen_perangkat_id' => $this->komponen->id,
+        'pelapor_id' => $this->laboran->id,
+    ]);
+
+    $response = $this->actingAs($this->laboran)
+        ->get(route('laboran.maintenance-log.export'));
+
+    $response->assertSuccessful();
+    $response->assertDownload('laporan-maintenance-log.xlsx');
+});

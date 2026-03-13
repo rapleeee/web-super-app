@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Laboran;
 
+use App\Exports\MaintenanceLogExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Laboran\StoreMaintenanceLogRequest;
 use App\Http\Requests\Laboran\UpdateMaintenanceLogRequest;
@@ -14,6 +15,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MaintenanceLogController extends Controller
 {
@@ -37,6 +40,24 @@ class MaintenanceLogController extends Controller
         ];
 
         return view('laboran.perangkat.maintenance.index', compact('maintenanceLogs', 'stats'));
+    }
+
+    /**
+     * Export maintenance logs to Excel.
+     */
+    public function export(Request $request): BinaryFileResponse
+    {
+        $maintenanceLogs = MaintenanceLog::query()
+            ->with(['komponenPerangkat.unitKomputer.laboratorium', 'komponenPerangkat.kategori', 'pelapor'])
+            ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+            ->when($request->komponen_id, fn ($q, $id) => $q->where('komponen_perangkat_id', $id))
+            ->latest('tanggal_lapor')
+            ->get();
+
+        return Excel::download(
+            new MaintenanceLogExport($maintenanceLogs),
+            'laporan-maintenance-log.xlsx'
+        );
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Laboran;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Laboran\BulkDeleteUnitKomputerRequest;
+use App\Http\Requests\Laboran\BulkUpdateUnitKomputerRequest;
 use App\Http\Requests\Laboran\StoreUnitKomputerRequest;
 use App\Http\Requests\Laboran\UpdateUnitKomputerRequest;
 use App\Imports\UnitKomputerImport;
@@ -22,6 +24,12 @@ class UnitKomputerController extends Controller
      */
     public function index(Request $request): View
     {
+        $perPageOptions = [5, 10, 30, 50, 100];
+        $perPage = (int) $request->integer('per_page', 10);
+        if (! in_array($perPage, $perPageOptions, true)) {
+            $perPage = 10;
+        }
+
         $unitKomputers = UnitKomputer::query()
             ->with('laboratorium')
             ->withCount('komponenPerangkats')
@@ -33,12 +41,12 @@ class UnitKomputerController extends Controller
                     ->orWhere('kode_unit', 'like', "%{$search}%");
             }))
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
         $laboratoriums = Laboratorium::where('status', 'aktif')->get();
 
-        return view('laboran.perangkat.unit.index', compact('unitKomputers', 'laboratoriums'));
+        return view('laboran.perangkat.unit.index', compact('unitKomputers', 'laboratoriums', 'perPageOptions', 'perPage'));
     }
 
     /**
@@ -109,6 +117,66 @@ class UnitKomputerController extends Controller
         return redirect()
             ->route('laboran.unit-komputer.index')
             ->with('success', 'Unit komputer berhasil dihapus.');
+    }
+
+    /**
+     * Remove selected resources from storage.
+     */
+    public function bulkDelete(BulkDeleteUnitKomputerRequest $request): RedirectResponse
+    {
+        $deletedCount = UnitKomputer::query()
+            ->whereIn('id', $request->validated('unit_ids'))
+            ->delete();
+
+        return back()->with('success', "{$deletedCount} unit komputer berhasil dihapus.");
+    }
+
+    /**
+     * Update selected resources in storage.
+     */
+    public function bulkUpdate(BulkUpdateUnitKomputerRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+        $unitIds = $validated['unit_ids'];
+        $mode = $validated['mode'];
+
+        $payload = collect($validated)
+            ->only(['laboratorium_id', 'nomor_meja', 'kondisi', 'status', 'keterangan'])
+            ->reject(fn (mixed $value): bool => is_null($value) || $value === '')
+            ->all();
+
+        $updatedCount = 0;
+
+        if ($mode === 'overwrite') {
+            $updatedCount = UnitKomputer::query()
+                ->whereIn('id', $unitIds)
+                ->update($payload);
+        } else {
+            $unitKomputers = UnitKomputer::query()
+                ->whereIn('id', $unitIds)
+                ->get();
+
+            foreach ($unitKomputers as $unitKomputer) {
+                $fieldsToUpdate = [];
+
+                foreach ($payload as $field => $value) {
+                    if ($this->isFieldEmpty($unitKomputer->{$field})) {
+                        $fieldsToUpdate[$field] = $value;
+                    }
+                }
+
+                if ($fieldsToUpdate !== []) {
+                    $unitKomputer->update($fieldsToUpdate);
+                    $updatedCount++;
+                }
+            }
+        }
+
+        $message = $mode === 'overwrite'
+            ? "{$updatedCount} unit komputer berhasil diperbarui."
+            : "{$updatedCount} unit komputer berhasil diisi field kosongnya.";
+
+        return back()->with('success', $message);
     }
 
     /**
@@ -298,5 +366,14 @@ class UnitKomputerController extends Controller
                 ->route('laboran.unit-komputer.import')
                 ->with('error', 'Gagal import: '.$e->getMessage());
         }
+    }
+
+    private function isFieldEmpty(mixed $value): bool
+    {
+        if (is_string($value)) {
+            return trim($value) === '';
+        }
+
+        return is_null($value);
     }
 }

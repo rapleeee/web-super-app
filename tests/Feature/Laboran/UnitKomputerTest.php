@@ -15,14 +15,32 @@ test('unit komputer index can be rendered', function () {
     $response = $this->actingAs($this->laboran)
         ->get(route('laboran.unit-komputer.index'));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
+});
+
+test('unit komputer index applies per page selection', function () {
+    UnitKomputer::factory()->count(12)->create([
+        'laboratorium_id' => $this->laboratorium->id,
+    ]);
+
+    $response = $this->actingAs($this->laboran)
+        ->get(route('laboran.unit-komputer.index', [
+            'per_page' => 5,
+        ]));
+
+    $response
+        ->assertSuccessful()
+        ->assertViewHas('unitKomputers', function ($unitKomputers): bool {
+            return $unitKomputers->perPage() === 5
+                && $unitKomputers->count() === 5;
+        });
 });
 
 test('unit komputer create can be rendered', function () {
     $response = $this->actingAs($this->laboran)
         ->get(route('laboran.unit-komputer.create'));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
 });
 
 test('unit komputer can be created', function () {
@@ -48,7 +66,7 @@ test('unit komputer show can be rendered', function () {
     $response = $this->actingAs($this->laboran)
         ->get(route('laboran.unit-komputer.show', $unit));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
 });
 
 test('unit komputer edit can be rendered', function () {
@@ -57,7 +75,7 @@ test('unit komputer edit can be rendered', function () {
     $response = $this->actingAs($this->laboran)
         ->get(route('laboran.unit-komputer.edit', $unit));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
 });
 
 test('unit komputer can be updated', function () {
@@ -88,6 +106,90 @@ test('unit komputer can be deleted', function () {
     $response->assertRedirect(route('laboran.unit-komputer.index'));
     $this->assertDatabaseMissing('unit_komputers', [
         'id' => $unit->id,
+    ]);
+});
+
+test('selected unit komputer can be bulk deleted', function () {
+    $units = UnitKomputer::factory()->count(3)->create([
+        'laboratorium_id' => $this->laboratorium->id,
+    ]);
+
+    $response = $this->actingAs($this->laboran)
+        ->delete(route('laboran.unit-komputer.bulk-delete'), [
+            'unit_ids' => [$units[0]->id, $units[1]->id],
+        ]);
+
+    $response->assertSessionHas('success', '2 unit komputer berhasil dihapus.');
+
+    $this->assertDatabaseMissing('unit_komputers', [
+        'id' => $units[0]->id,
+    ]);
+    $this->assertDatabaseMissing('unit_komputers', [
+        'id' => $units[1]->id,
+    ]);
+    $this->assertDatabaseHas('unit_komputers', [
+        'id' => $units[2]->id,
+    ]);
+});
+
+test('selected unit komputer can be bulk updated with overwrite mode', function () {
+    $units = UnitKomputer::factory()->count(2)->create([
+        'laboratorium_id' => $this->laboratorium->id,
+        'kondisi' => 'baik',
+        'status' => 'aktif',
+    ]);
+
+    $this->actingAs($this->laboran)
+        ->patch(route('laboran.unit-komputer.bulk-update'), [
+            'unit_ids' => [$units[0]->id, $units[1]->id],
+            'mode' => 'overwrite',
+            'kondisi' => 'rusak_berat',
+            'status' => 'tidak_aktif',
+        ])
+        ->assertSessionHas('success', '2 unit komputer berhasil diperbarui.');
+
+    $this->assertDatabaseHas('unit_komputers', [
+        'id' => $units[0]->id,
+        'kondisi' => 'rusak_berat',
+        'status' => 'tidak_aktif',
+    ]);
+    $this->assertDatabaseHas('unit_komputers', [
+        'id' => $units[1]->id,
+        'kondisi' => 'rusak_berat',
+        'status' => 'tidak_aktif',
+    ]);
+});
+
+test('selected unit komputer can be bulk updated with fill empty mode', function () {
+    $emptyFieldsUnit = UnitKomputer::factory()->create([
+        'laboratorium_id' => $this->laboratorium->id,
+        'nomor_meja' => null,
+        'keterangan' => null,
+    ]);
+    $filledFieldsUnit = UnitKomputer::factory()->create([
+        'laboratorium_id' => $this->laboratorium->id,
+        'nomor_meja' => 11,
+        'keterangan' => 'Sudah ada keterangan',
+    ]);
+
+    $this->actingAs($this->laboran)
+        ->patch(route('laboran.unit-komputer.bulk-update'), [
+            'unit_ids' => [$emptyFieldsUnit->id, $filledFieldsUnit->id],
+            'mode' => 'fill_empty',
+            'nomor_meja' => 20,
+            'keterangan' => 'Diisi lewat bulk',
+        ])
+        ->assertSessionHas('success', '1 unit komputer berhasil diisi field kosongnya.');
+
+    $this->assertDatabaseHas('unit_komputers', [
+        'id' => $emptyFieldsUnit->id,
+        'nomor_meja' => 20,
+        'keterangan' => 'Diisi lewat bulk',
+    ]);
+    $this->assertDatabaseHas('unit_komputers', [
+        'id' => $filledFieldsUnit->id,
+        'nomor_meja' => 11,
+        'keterangan' => 'Sudah ada keterangan',
     ]);
 });
 

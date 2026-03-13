@@ -26,11 +26,14 @@ Route::middleware(['auth', 'role:laboran,staff'])->group(function () {
         Route::post('unit-komputer/import/preview', [UnitKomputerController::class, 'importPreview'])->name('unit-komputer.import.preview');
         Route::post('unit-komputer/import/process', [UnitKomputerController::class, 'importProcess'])->name('unit-komputer.import.process');
         Route::get('unit-komputer/template', [UnitKomputerController::class, 'downloadTemplate'])->name('unit-komputer.template');
+        Route::delete('unit-komputer/bulk-delete', [UnitKomputerController::class, 'bulkDelete'])->name('unit-komputer.bulk-delete');
+        Route::patch('unit-komputer/bulk-update', [UnitKomputerController::class, 'bulkUpdate'])->name('unit-komputer.bulk-update');
         Route::resource('unit-komputer', UnitKomputerController::class);
 
         Route::resource('komponen-perangkat', KomponenPerangkatController::class);
 
         Route::get('maintenance-log/komponens/{unitKomputer}', [MaintenanceLogController::class, 'getKomponensByUnit'])->name('maintenance-log.komponens');
+        Route::get('maintenance-log/export', [MaintenanceLogController::class, 'export'])->name('maintenance-log.export');
         Route::resource('maintenance-log', MaintenanceLogController::class);
 
         Route::get('export/weekly-report', [LaboranController::class, 'exportWeeklyReport'])->name('export.weekly-report');

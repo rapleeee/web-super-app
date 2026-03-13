@@ -8,11 +8,18 @@
             <h1 class="text-2xl font-bold text-gray-900">Maintenance Log</h1>
             <p class="text-gray-600 mt-1">Riwayat perbaikan dan perawatan perangkat</p>
         </div>
-        <a href="{{ route('laboran.maintenance-log.create') }}"
-           class="inline-flex items-center gap-2 bg-[#272125] text-white px-4 py-2 rounded-lg hover:bg-[#3a3136] transition">
-            <x-heroicon-o-plus class="w-5 h-5"/>
-            Lapor Masalah
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('laboran.maintenance-log.export', request()->query()) }}"
+               class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                <x-heroicon-o-arrow-down-tray class="w-5 h-5"/>
+                Export Excel
+            </a>
+            <a href="{{ route('laboran.maintenance-log.create') }}"
+               class="inline-flex items-center gap-2 bg-[#272125] text-white px-4 py-2 rounded-lg hover:bg-[#3a3136] transition">
+                <x-heroicon-o-plus class="w-5 h-5"/>
+                Lapor Masalah
+            </a>
+        </div>
     </div>
 
     {{-- Stats --}}
